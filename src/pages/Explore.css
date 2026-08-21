@@ -1,0 +1,116 @@
+.explore-page {
+  min-height: 70vh;
+  padding: 60px 6%;
+}
+
+.explore-page h1 {
+  margin: 0 0 35px;
+  text-align: center;
+  color: #742111;
+  font-family: 'Playfair Display', serif;
+  font-size: 2.8rem;
+  font-weight: 500;
+}
+
+.search-bar {
+  display: block;
+  width: min(600px, 100%);
+  margin: 0 auto 45px;
+  padding: 14px 18px;
+  border: 1px solid #D0CCA4;
+  border-radius: 6px;
+  background: #FFF8E7;
+  color: #58552D;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+}
+
+.search-bar:focus {
+  outline: none;
+  border-color: #A87A57;
+}
+
+.idea-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+}
+
+.idea-card {
+  min-height: 280px;
+  padding: 25px;
+  border: 1px solid #D0CCA4;
+  border-radius: 8px;
+  background: #FFF8E7;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.idea-category {
+  color: #A87A57;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.idea-card h2 {
+  margin: 12px 0;
+  color: #742111;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.idea-card p {
+  margin: 0;
+  color: #58552D;
+  line-height: 1.6;
+}
+
+.idea-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 25px;
+}
+
+.idea-card-actions button {
+  border: none;
+  background: transparent;
+  color: #58552D;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.idea-card-actions button:hover {
+  transform: scale(1.1);
+}
+
+.idea-card-actions button:last-child {
+  margin-left: auto;
+  font-size: 22px;
+}
+
+.explore-page > p {
+  text-align: center;
+  color: #58552D;
+}
+
+@media (max-width: 900px) {
+  .idea-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .explore-page {
+    padding: 40px 24px;
+  }
+
+  .idea-grid {
+    grid-template-columns: 1fr;
+  }
+}
