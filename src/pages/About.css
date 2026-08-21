@@ -1,0 +1,21 @@
+.about-page {
+  min-height: 60vh;
+  padding: 80px 12%;
+  background: #FFF8E7;
+}
+
+.about-page h1 {
+  margin: 0 0 24px;
+  color: #742111;
+  font-family: 'Playfair Display', serif;
+  font-size: 3rem;
+  font-weight: 500;
+}
+
+.about-page p {
+  max-width: 700px;
+  margin: 0 0 18px;
+  color: #58552D;
+  font-size: 1rem;
+  line-height: 1.8;
+}

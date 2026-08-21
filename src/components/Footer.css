@@ -1,0 +1,59 @@
+.footer {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 40px;
+  padding: 60px 6% 40px;
+  background: #58552D;
+  color: #FFF8E7;
+}
+
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.footer-logo {
+  color: #FFF8E7;
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+}
+
+.footer-slogan {
+  color: #D0CCA4;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+}
+
+.footer-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer-section h3 {
+  margin: 0 0 6px;
+  color: #FFF8E7;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.footer-section a {
+  width: fit-content;
+  color: #D0CCA4;
+  font-size: 0.9rem;
+  transition: color 0.2s ease;
+}
+
+.footer-section a:hover {
+  color: #FFF8E7;
+}
+
+@media (max-width: 768px) {
+  .footer {
+    grid-template-columns: 1fr;
+    padding: 50px 24px 35px;
+  }
+}
