@@ -1,0 +1,55 @@
+.notifications-page {
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+}
+
+.notifications-content {
+  max-width: 600px;
+  text-align: center;
+}
+
+.notification-icon {
+  margin-bottom: 20px;
+  color: #742111;
+  font-size: 60px;
+}
+
+.notifications-content h1 {
+  margin: 0 0 20px;
+  color: #742111;
+  font-family: 'Playfair Display', serif;
+  font-size: 2.8rem;
+  font-weight: 500;
+}
+
+.notifications-content p {
+  margin: 0 0 10px;
+  color: #58552D;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.notifications-content span {
+  display: block;
+  color: #58552D;
+  line-height: 1.7;
+}
+
+.notifications-content button {
+  margin-top: 30px;
+  padding: 12px 28px;
+  border: none;
+  border-radius: 6px;
+  background: #742111;
+  color: #FFF8E7;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.notifications-content button:hover {
+  background: #A87A57;
+}
