@@ -368,6 +368,129 @@
   background: #f4f0df;
 }
 
+.task-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 15px;
+  padding: 14px;
+  border-radius: 10px;
+  background: #f8f5ea;
+}
+
+.task-form input {
+  width: 100%;
+  padding: 10px 11px;
+  border: 1px solid #d8d1bd;
+  border-radius: 7px;
+  background: #fffdf7;
+  color: #58552d;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  box-sizing: border-box;
+}
+
+.task-form input:focus {
+  outline: none;
+  border-color: #a87a57;
+}
+
+.task-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.task-form-actions button {
+  padding: 7px 11px;
+  border: none;
+  border-radius: 6px;
+  background: #58552d;
+  color: #fff8e7;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.task-form-actions button:first-child {
+  background: transparent;
+  color: #58552d;
+  border: 1px solid #d0cca4;
+}
+
+.task-form-actions button:hover {
+  background: #742111;
+  color: #fff8e7;
+}
+
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #f8f5ea;
+}
+
+.task-info {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.task-title {
+  color: #58552d;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.task-date {
+  color: #8a8564;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.72rem;
+}
+
+.task-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.task-actions button {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #58552d;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.task-actions button:hover {
+  background: rgba(88, 85, 45, 0.1);
+}
+
+.task-actions button:last-child {
+  color: #742111;
+}
+
+.task-actions button:last-child:hover {
+  background: rgba(116, 33, 17, 0.08);
+}
+
 .empty-state {
   padding: 16px;
   border-radius: 10px;
@@ -446,7 +569,116 @@
   }
 
   .section-heading {
-    align-items: flex-start;
+    align-items: center;
+  }
+
+  .task-item {
+    gap: 8px;
+  }
+}
+
+.task-input-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.task-input-row input,
+.task-edit-row input {
+  flex: 1;
+  min-width: 0;
+  padding: 9px 11px;
+  border: 1px solid #d8d1bd;
+  border-radius: 7px;
+  background: #fffdf7;
+  color: #58552d;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  box-sizing: border-box;
+}
+
+.task-input-row input:focus,
+.task-edit-row input:focus {
+  outline: none;
+  border-color: #a87a57;
+  box-shadow: 0 0 0 2px rgba(168, 122, 87, 0.12);
+}
+
+.task-save-button {
+  padding: 9px 13px;
+  border: none;
+  border-radius: 7px;
+  background: #58552d;
+  color: #fff8e7;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.task-save-button:hover {
+  background: #742111;
+}
+
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 11px 12px;
+  border-radius: 9px;
+  background: #f8f5ea;
+  color: #58552d;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+}
+
+.task-item > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.task-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.task-actions button {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #58552d;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.task-actions button:hover {
+  background: rgba(88, 85, 45, 0.08);
+}
+
+.task-edit-row {
+  display: flex;
+  width: 100%;
+  gap: 10px;
+}
+
+@media (max-width: 480px) {
+  .task-input-row,
+  .task-edit-row {
     flex-direction: column;
+  }
+
+  .task-save-button {
+    width: fit-content;
   }
 }

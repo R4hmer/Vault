@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import QuickAdd from '../components/QuickAdd'
+import IdeaDetails from '../components/IdeaDetails'
 import './Vault.css'
 
 function Vault() {
@@ -43,6 +44,84 @@ function Vault() {
 
   function closeDetails() {
     setSelectedIdea(null)
+  }
+
+  function handleAddTask(ideaId, task) {
+    setIdeas((currentIdeas) =>
+      currentIdeas.map((idea) =>
+        idea.id === ideaId
+          ? {
+              ...idea,
+              tasks: [
+                ...(idea.tasks || []),
+                {
+                  id: Date.now(),
+                  title: task
+                }
+              ]
+            }
+          : idea
+      )
+    )
+
+    setSelectedIdea((currentIdea) => ({
+      ...currentIdea,
+      tasks: [
+        ...(currentIdea.tasks || []),
+        {
+          id: Date.now(),
+          title: task
+        }
+      ]
+    }))
+  }
+
+  function handleDeleteTask(ideaId, taskId) {
+    setIdeas((currentIdeas) =>
+      currentIdeas.map((idea) =>
+        idea.id === ideaId
+          ? {
+              ...idea,
+              tasks: (idea.tasks || []).filter(
+                (task) => task.id !== taskId
+              )
+            }
+          : idea
+      )
+    )
+
+    setSelectedIdea((currentIdea) => ({
+      ...currentIdea,
+      tasks: (currentIdea.tasks || []).filter(
+        (task) => task.id !== taskId
+      )
+    }))
+  }
+
+  function handleEditTask(ideaId, taskId, newTitle) {
+    setIdeas((currentIdeas) =>
+      currentIdeas.map((idea) =>
+        idea.id === ideaId
+          ? {
+              ...idea,
+              tasks: (idea.tasks || []).map((task) =>
+                task.id === taskId
+                  ? { ...task, title: newTitle }
+                  : task
+              )
+            }
+          : idea
+      )
+    )
+
+    setSelectedIdea((currentIdea) => ({
+      ...currentIdea,
+      tasks: (currentIdea.tasks || []).map((task) =>
+        task.id === taskId
+          ? { ...task, title: newTitle }
+          : task
+      )
+    }))
   }
 
   return (
@@ -102,65 +181,14 @@ function Vault() {
       </div>
 
       {selectedIdea && (
-        <div
-          className="idea-modal-overlay"
-          onClick={closeDetails}
-        >
-          <div
-            className="idea-modal"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <button
-              className="modal-close"
-              onClick={closeDetails}
-              aria-label="Close idea details"
-            >
-              ×
-            </button>
-
-            <div className="modal-header">
-              <span className="modal-privacy">
-                {selectedIdea.isPublic ? 'Public' : 'Private'}
-              </span>
-
-              <h2>{selectedIdea.title}</h2>
-
-              <p>{selectedIdea.description}</p>
-            </div>
-
-            <div className="modal-section">
-              <div className="section-heading">
-                <h3>Roadmap</h3>
-
-                <button className="add-task-button">
-                  + Add Task
-                </button>
-              </div>
-
-              <div className="empty-state">
-                <p>No roadmap tasks yet.</p>
-              </div>
-            </div>
-
-            {selectedIdea.isPublic && (
-              <div className="modal-section">
-                <h3>Feedback</h3>
-
-                <div className="empty-state">
-                  <p>No feedback yet.</p>
-                </div>
-              </div>
-            )}
-
-            <button
-              className="modal-delete-button"
-              onClick={() => handleDeleteIdea(selectedIdea.id)}
-              aria-label="Delete idea"
-            >
-              🗑️
-            </button>
-          </div>
-        </div>
+        <IdeaDetails
+          idea={selectedIdea}
+          onClose={closeDetails}
+          onDeleteIdea={handleDeleteIdea}
+          onAddTask={handleAddTask}
+          onEditTask={handleEditTask}
+          onDeleteTask={handleDeleteTask}
+        />
       )}
     </main>
   )
