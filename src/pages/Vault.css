@@ -23,7 +23,7 @@
   border: none;
   border-radius: 6px;
   background: #742111;
-  color: #FFF8E7;
+  color: #fff8e7;
   font-family: 'DM Sans', sans-serif;
   font-size: 0.9rem;
   cursor: pointer;
@@ -31,16 +31,16 @@
 }
 
 .vault-header button:hover {
-  background: #A87A57;
+  background: #a87a57;
 }
 
 .quick-add-form {
   max-width: 700px;
   margin: 0 auto 50px;
   padding: 35px;
-  border: 1px solid #D0CCA4;
+  border: 1px solid #d0cca4;
   border-radius: 8px;
-  background: #FFF8E7;
+  background: #fff8e7;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -54,7 +54,7 @@
 }
 
 .quick-add-form label {
-  color: #58552D;
+  color: #58552d;
   font-size: 0.9rem;
   font-weight: 500;
 }
@@ -65,12 +65,13 @@
   width: 100%;
   padding: 11px 12px;
   margin-bottom: 10px;
-  border: 1px solid #D0CCA4;
+  border: 1px solid #d0cca4;
   border-radius: 5px;
-  background: #FFF8E7;
-  color: #58552D;
+  background: #fff8e7;
+  color: #58552d;
   font-family: 'DM Sans', sans-serif;
   font-size: 0.9rem;
+  box-sizing: border-box;
 }
 
 .quick-add-form textarea {
@@ -82,28 +83,74 @@
 .quick-add-form textarea:focus,
 .quick-add-form select:focus {
   outline: none;
-  border-color: #A87A57;
+  border-color: #a87a57;
 }
 
-.quick-add-form button {
+.color-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.color-option {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.color-option:hover {
+  transform: scale(1.08);
+}
+
+.color-option.selected {
+  border-color: #58552d;
+  box-shadow: 0 0 0 2px #fff8e7, 0 0 0 4px #58552d;
+}
+
+.public-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 5px;
+}
+
+.public-checkbox input {
+  width: auto;
+  margin: 0;
+}
+
+.quick-add-form > button {
   margin-top: 10px;
   padding: 12px;
   border: none;
   border-radius: 5px;
-  background: #58552D;
-  color: #FFF8E7;
+  background: #58552d;
+  color: #fff8e7;
   font-family: 'DM Sans', sans-serif;
   font-size: 0.9rem;
   cursor: pointer;
+  transition: background 0.2s ease, opacity 0.2s ease;
 }
 
-.quick-add-form button:hover {
+.quick-add-form > button:hover:not(:disabled) {
   background: #742111;
+}
+
+.quick-add-form > button:disabled {
+  background: #d0cca4;
+  color: #fff8e7;
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
 .idea-list {
   width: 100%;
-  border-top: 1px solid #D0CCA4;
+  border-top: 1px solid #d0cca4;
 }
 
 .idea-row {
@@ -111,24 +158,10 @@
   grid-template-columns: 2fr 1fr 1fr;
   gap: 20px;
   padding: 20px 10px;
-  border-bottom: 1px solid #D0CCA4;
-  color: #58552D;
+  border-bottom: 1px solid #d0cca4;
+  color: #58552d;
 }
 
-@media (max-width: 768px) {
-  .vault-page {
-    padding: 40px 24px;
-  }
-
-  .vault-header h1 {
-    font-size: 2.2rem;
-  }
-
-  .idea-row {
-    grid-template-columns: 1fr;
-    gap: 8px;
-  }
-}
 .idea-heading {
   color: #742111;
   font-size: 0.8rem;
@@ -136,35 +169,38 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
+
 .idea-row select {
   width: fit-content;
   padding: 6px 10px;
-  border: 1px solid #D0CCA4;
+  border: 1px solid #d0cca4;
   border-radius: 5px;
-  background: #FFF8E7;
-  color: #58552D;
+  background: #fff8e7;
+  color: #58552d;
   font-family: 'DM Sans', sans-serif;
   cursor: pointer;
 }
 
 .idea-row select:focus {
   outline: none;
-  border-color: #A87A57;
+  border-color: #a87a57;
 }
+
 .idea-row button {
   width: fit-content;
   padding: 6px 12px;
   border: none;
   border-radius: 5px;
   background: #742111;
-  color: #FFF8E7;
+  color: #fff8e7;
   font-family: 'DM Sans', sans-serif;
   cursor: pointer;
 }
 
 .idea-row button:hover {
-  background: #A87A57;
+  background: #a87a57;
 }
+
 .idea-actions {
   display: flex;
   align-items: center;
@@ -183,5 +219,35 @@
 }
 
 .delete-button:hover {
-  background: #D0CCA4;
+  background: #d0cca4;
+}
+
+@media (max-width: 768px) {
+  .vault-page {
+    padding: 40px 24px;
+  }
+
+  .vault-header h1 {
+    font-size: 2.2rem;
+  }
+
+  .idea-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .quick-add-form {
+    padding: 24px;
+  }
+
+  .color-options {
+    gap: 10px;
+  }
+
+  .color-option {
+    width: 32px;
+    height: 32px;
+  }
 }

@@ -1,18 +1,31 @@
 import { useState } from 'react'
 
+const cardColors = [
+  '#F4E4D4',
+  '#E8E8D0',
+  '#DDE8D8',
+  '#D8E4E8',
+  '#E4DCE8',
+  '#F0D9D2'
+]
+
 function QuickAdd({ onAddIdea }) {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [category, setCategory] = useState('')
   const [status, setStatus] = useState('Thinking')
   const [isPublic, setIsPublic] = useState(false)
-  const [error, setError] = useState('')
+  const [selectedColor, setSelectedColor] = useState(cardColors[0])
+
+  const isFormValid =
+    title.trim() &&
+    description.trim() &&
+    category.trim()
 
   function handleSubmit(event) {
     event.preventDefault()
 
-    if (!title.trim() || !description.trim() || !category.trim()) {
-      setError('Please fill out the field first.')
+    if (!isFormValid) {
       return
     }
 
@@ -22,7 +35,8 @@ function QuickAdd({ onAddIdea }) {
       description,
       category,
       status,
-      isPublic
+      isPublic,
+      color: selectedColor
     }
 
     onAddIdea(newIdea)
@@ -32,34 +46,53 @@ function QuickAdd({ onAddIdea }) {
     setCategory('')
     setStatus('Thinking')
     setIsPublic(false)
-    setError('')
+    setSelectedColor(cardColors[0])
   }
 
   return (
     <form className="quick-add-form" onSubmit={handleSubmit}>
       <h2>Add a new idea</h2>
 
-      {error && <p className="form-error">{error}</p>}
-
       <label>Idea title</label>
+
       <input
         value={title}
         onChange={(event) => setTitle(event.target.value)}
       />
 
       <label>Description</label>
+
       <textarea
         value={description}
         onChange={(event) => setDescription(event.target.value)}
       />
 
       <label>Category</label>
+
       <input
         value={category}
         onChange={(event) => setCategory(event.target.value)}
       />
 
+      <label>Card colour</label>
+
+      <div className="color-options">
+        {cardColors.map((color) => (
+          <button
+            type="button"
+            key={color}
+            className={`color-option ${
+              selectedColor === color ? 'selected' : ''
+            }`}
+            style={{ backgroundColor: color }}
+            onClick={() => setSelectedColor(color)}
+            aria-label={`Select card colour ${color}`}
+          />
+        ))}
+      </div>
+
       <label>Status</label>
+
       <select
         value={status}
         onChange={(event) => setStatus(event.target.value)}
@@ -69,7 +102,7 @@ function QuickAdd({ onAddIdea }) {
         <option value="Completed">Completed</option>
       </select>
 
-      <label>
+      <label className="public-checkbox">
         <input
           type="checkbox"
           checked={isPublic}
@@ -78,7 +111,12 @@ function QuickAdd({ onAddIdea }) {
         Public idea
       </label>
 
-      <button type="submit">Save Idea</button>
+      <button
+        type="submit"
+        disabled={!isFormValid}
+      >
+        Save Idea
+      </button>
     </form>
   )
 }
