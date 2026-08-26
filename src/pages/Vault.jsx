@@ -5,6 +5,7 @@ import './Vault.css'
 function Vault() {
   const [ideas, setIdeas] = useState([])
   const [showForm, setShowForm] = useState(false)
+  const [selectedIdea, setSelectedIdea] = useState(null)
 
   function handleAddIdea(newIdea) {
     setIdeas((currentIdeas) => [...currentIdeas, newIdea])
@@ -15,6 +16,33 @@ function Vault() {
     setIdeas((currentIdeas) =>
       currentIdeas.filter((idea) => idea.id !== id)
     )
+
+    setSelectedIdea(null)
+  }
+
+  function handleStatusChange(id, status) {
+    setIdeas((currentIdeas) =>
+      currentIdeas.map((idea) =>
+        idea.id === id
+          ? { ...idea, status }
+          : idea
+      )
+    )
+
+    if (selectedIdea?.id === id) {
+      setSelectedIdea((currentIdea) => ({
+        ...currentIdea,
+        status
+      }))
+    }
+  }
+
+  function handleCardClick(idea) {
+    setSelectedIdea(idea)
+  }
+
+  function closeDetails() {
+    setSelectedIdea(null)
   }
 
   return (
@@ -29,46 +57,111 @@ function Vault() {
 
       {showForm && <QuickAdd onAddIdea={handleAddIdea} />}
 
-      <div className="idea-list">
-        <div className="idea-row idea-heading">
-          <span>Idea</span>
-          <span>Category</span>
-          <span>Status</span>
-        </div>
-
+      <div className="idea-grid">
         {ideas.map((idea) => (
-          <div className="idea-row" key={idea.id}>
-            <span>{idea.title}</span>
-            <span>{idea.category}</span>
+          <article
+            className="vault-idea-card"
+            key={idea.id}
+            style={{
+              backgroundColor: idea.iconColor || '#fff8e7'
+            }}
+            onClick={() => handleCardClick(idea)}
+          >
+            <div className="vault-card-content">
+              <h2>{idea.title}</h2>
 
-            <div className="idea-actions">
+              <p>
+                {idea.description.length > 20
+                  ? `${idea.description.slice(0, 20)}...`
+                  : idea.description}
+              </p>
+            </div>
+
+            <div className="vault-card-footer">
+              <span>
+                {idea.isPublic ? 'Public' : 'Private'}
+              </span>
+
               <select
                 value={idea.status}
-                onChange={(event) => {
-                  const updatedIdeas = ideas.map((currentIdea) =>
-                    currentIdea.id === idea.id
-                      ? { ...currentIdea, status: event.target.value }
-                      : currentIdea
+                onClick={(event) => event.stopPropagation()}
+                onChange={(event) =>
+                  handleStatusChange(
+                    idea.id,
+                    event.target.value
                   )
-
-                  setIdeas(updatedIdeas)
-                }}
+                }
               >
                 <option value="Thinking">Thinking</option>
                 <option value="Building">Building</option>
                 <option value="Completed">Completed</option>
               </select>
-
-              <button
-                className="delete-button"
-                onClick={() => handleDeleteIdea(idea.id)}
-              >
-                🗑️
-              </button>
             </div>
-          </div>
+          </article>
         ))}
       </div>
+
+      {selectedIdea && (
+        <div
+          className="idea-modal-overlay"
+          onClick={closeDetails}
+        >
+          <div
+            className="idea-modal"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              className="modal-close"
+              onClick={closeDetails}
+              aria-label="Close idea details"
+            >
+              ×
+            </button>
+
+            <div className="modal-header">
+              <span className="modal-privacy">
+                {selectedIdea.isPublic ? 'Public' : 'Private'}
+              </span>
+
+              <h2>{selectedIdea.title}</h2>
+
+              <p>{selectedIdea.description}</p>
+            </div>
+
+            <div className="modal-section">
+              <div className="section-heading">
+                <h3>Roadmap</h3>
+
+                <button className="add-task-button">
+                  + Add Task
+                </button>
+              </div>
+
+              <div className="empty-state">
+                <p>No roadmap tasks yet.</p>
+              </div>
+            </div>
+
+            {selectedIdea.isPublic && (
+              <div className="modal-section">
+                <h3>Feedback</h3>
+
+                <div className="empty-state">
+                  <p>No feedback yet.</p>
+                </div>
+              </div>
+            )}
+
+            <button
+              className="modal-delete-button"
+              onClick={() => handleDeleteIdea(selectedIdea.id)}
+              aria-label="Delete idea"
+            >
+              🗑️
+            </button>
+          </div>
+        </div>
+      )}
     </main>
   )
 }

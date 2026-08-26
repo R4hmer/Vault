@@ -1,12 +1,12 @@
 import { useState } from 'react'
 
-const cardColors = [
-  '#F4E4D4',
-  '#E8E8D0',
-  '#DDE8D8',
-  '#D8E4E8',
-  '#E4DCE8',
-  '#F0D9D2'
+const ideaColors = [
+  '#F3E5DE',
+  '#F1E7DC',
+  '#F4F0DF',
+  '#E8E9D8',
+  '#E3E8E0',
+  '#EEE5D9'
 ]
 
 function QuickAdd({ onAddIdea }) {
@@ -15,17 +15,14 @@ function QuickAdd({ onAddIdea }) {
   const [category, setCategory] = useState('')
   const [status, setStatus] = useState('Thinking')
   const [isPublic, setIsPublic] = useState(false)
-  const [selectedColor, setSelectedColor] = useState(cardColors[0])
-
-  const isFormValid =
-    title.trim() &&
-    description.trim() &&
-    category.trim()
+  const [selectedColor, setSelectedColor] = useState(ideaColors[0])
+  const [error, setError] = useState('')
 
   function handleSubmit(event) {
     event.preventDefault()
 
-    if (!isFormValid) {
+    if (!title.trim() || !description.trim() || !category.trim()) {
+      setError('Please fill out the field first.')
       return
     }
 
@@ -36,7 +33,7 @@ function QuickAdd({ onAddIdea }) {
       category,
       status,
       isPublic,
-      color: selectedColor
+      iconColor: selectedColor
     }
 
     onAddIdea(newIdea)
@@ -46,29 +43,29 @@ function QuickAdd({ onAddIdea }) {
     setCategory('')
     setStatus('Thinking')
     setIsPublic(false)
-    setSelectedColor(cardColors[0])
+    setSelectedColor(ideaColors[0])
+    setError('')
   }
 
   return (
     <form className="quick-add-form" onSubmit={handleSubmit}>
       <h2>Add a new idea</h2>
 
-      <label>Idea title</label>
+      {error && <p className="form-error">{error}</p>}
 
+      <label>Idea title</label>
       <input
         value={title}
         onChange={(event) => setTitle(event.target.value)}
       />
 
       <label>Description</label>
-
       <textarea
         value={description}
         onChange={(event) => setDescription(event.target.value)}
       />
 
       <label>Category</label>
-
       <input
         value={category}
         onChange={(event) => setCategory(event.target.value)}
@@ -77,7 +74,7 @@ function QuickAdd({ onAddIdea }) {
       <label>Card colour</label>
 
       <div className="color-options">
-        {cardColors.map((color) => (
+        {ideaColors.map((color) => (
           <button
             type="button"
             key={color}
@@ -111,12 +108,7 @@ function QuickAdd({ onAddIdea }) {
         Public idea
       </label>
 
-      <button
-        type="submit"
-        disabled={!isFormValid}
-      >
-        Save Idea
-      </button>
+      <button type="submit">Save Idea</button>
     </form>
   )
 }
