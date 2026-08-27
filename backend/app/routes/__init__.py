@@ -2,6 +2,7 @@ from flask import Blueprint
 
 from app.routes.comments import comments
 from app.routes.ideas import ideas
+from app.routes.likes import likes
 from app.routes.misc import misc
 
 routes = Blueprint("routes", __name__, url_prefix="/api")
@@ -25,4 +26,5 @@ def health():
 
 routes.register_blueprint(ideas)
 routes.register_blueprint(comments)
+routes.register_blueprint(likes)
 routes.register_blueprint(misc)
