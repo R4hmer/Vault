@@ -1,66 +1,148 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
-function Comments({ onClose }) {
-  const [comments, setComments] = useState([
-    {
-      id: 1,
-      username: 'Amina',
-      text: 'This is actually a really interesting idea.',
-      likes: 3,
-      liked: false
-    },
-    {
-      id: 2,
-      username: 'Sam',
-      text: 'I could definitely see this being developed further.',
-      likes: 1,
-      liked: false
-    }
-  ])
+const API_URL = import.meta.env.VITE_API_URL
+const CURRENT_USER_ID = 1
 
+function Comments({ ideaId, onClose }) {
+  const [comments, setComments] = useState([])
   const [commentText, setCommentText] = useState('')
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
-  function handleSubmit(event) {
+  useEffect(() => {
+    loadComments()
+  }, [ideaId])
+
+  async function loadComments() {
+    setLoading(true)
+    setError('')
+
+    try {
+      const response = await fetch(`${API_URL}/comments`)
+
+      if (!response.ok) {
+        throw new Error('Failed to load comments')
+      }
+
+      const data = await response.json()
+
+      const ideaComments = data.filter(
+        (comment) => comment.idea_id === ideaId
+      )
+
+      const commentsWithLikes = await Promise.all(
+        ideaComments.map(async (comment) => {
+          try {
+            const likesResponse = await fetch(
+              `${API_URL}/ideas/${ideaId}/comments/${comment.id}/engagement?user_id=${CURRENT_USER_ID}`
+            )
+
+            if (!likesResponse.ok) {
+              return {
+                ...comment,
+                likes: 0,
+                liked: false
+              }
+            }
+
+            const likesData = await likesResponse.json()
+
+            return {
+              ...comment,
+              likes: likesData.likes_count,
+              liked: likesData.is_liked
+            }
+          } catch {
+            return {
+              ...comment,
+              likes: 0,
+              liked: false
+            }
+          }
+        })
+      )
+
+      setComments(commentsWithLikes)
+    } catch {
+      setError('Unable to load comments.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  async function handleSubmit(event) {
     event.preventDefault()
 
     if (!commentText.trim()) {
       return
     }
 
-    const newComment = {
-      id: Date.now(),
-      username: 'You',
-      text: commentText.trim(),
-      likes: 0,
-      liked: false
+    try {
+      const response = await fetch(`${API_URL}/comments`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          text: commentText.trim(),
+          user_id: CURRENT_USER_ID,
+          idea_id: ideaId
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to create comment')
+      }
+
+      setCommentText('')
+      await loadComments()
+    } catch {
+      setError('Unable to post comment.')
     }
-
-    setComments((currentComments) => [
-      ...currentComments,
-      newComment
-    ])
-
-    setCommentText('')
   }
 
-  function handleLike(commentId) {
-    setComments((currentComments) =>
-      currentComments.map((comment) =>
-        comment.id === commentId
-          ? {
-              ...comment,
-              likes: comment.liked
-                ? comment.likes - 1
-                : comment.likes + 1,
-              liked: !comment.liked
-            }
-          : comment
+  async function handleLike(commentId, liked) {
+    try {
+      const response = await fetch(
+        `${API_URL}/ideas/${ideaId}/comments/${commentId}/like`,
+        {
+          method: liked ? 'DELETE' : 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            user_id: CURRENT_USER_ID
+          })
+        }
       )
-    )
+
+      if (!response.ok) {
+        throw new Error('Failed to update comment like')
+      }
+
+      setComments((currentComments) =>
+        currentComments.map((comment) =>
+          comment.id === commentId
+            ? {
+                ...comment,
+                liked: !liked,
+                likes: liked
+                  ? comment.likes - 1
+                  : comment.likes + 1
+              }
+            : comment
+        )
+      )
+    } catch {
+      setError('Unable to update comment like.')
+    }
   }
 
   return (
-    <div className="comments-overlay" onClick={onClose}>
+    <div
+      className="comments-overlay"
+      onClick={onClose}
+    >
       <div
         className="comments-modal"
         onClick={(event) => event.stopPropagation()}
@@ -78,28 +160,47 @@ function Comments({ onClose }) {
           </button>
         </div>
 
+        {error && (
+          <p className="form-error">{error}</p>
+        )}
+
         <div className="comments-list">
-          {comments.map((comment) => (
-            <div className="comment" key={comment.id}>
-              <div className="comment-content">
-                <strong>{comment.username}</strong>
-                <p>{comment.text}</p>
-              </div>
+          {loading && <p>Loading comments...</p>}
 
-              <button
-                className={`comment-like ${
-                  comment.liked ? 'liked' : ''
-                }`}
-                onClick={() => handleLike(comment.id)}
-                type="button"
-                aria-label="Like comment"
+          {!loading &&
+            comments.map((comment) => (
+              <div
+                className="comment"
+                key={comment.id}
               >
-                ♥ {comment.likes}
-              </button>
-            </div>
-          ))}
+                <div className="comment-content">
+                  <strong>
+                    {comment.username ||
+                      `User ${comment.user_id}`}
+                  </strong>
 
-          {comments.length === 0 && (
+                  <p>{comment.text}</p>
+                </div>
+
+                <button
+                  className={`comment-like ${
+                    comment.liked ? 'liked' : ''
+                  }`}
+                  onClick={() =>
+                    handleLike(
+                      comment.id,
+                      comment.liked
+                    )
+                  }
+                  type="button"
+                  aria-label="Like comment"
+                >
+                  ♥ {comment.likes}
+                </button>
+              </div>
+            ))}
+
+          {!loading && comments.length === 0 && (
             <p className="no-comments">
               No comments yet.
             </p>
@@ -129,4 +230,3 @@ function Comments({ onClose }) {
 }
 
 export default Comments
-

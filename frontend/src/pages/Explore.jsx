@@ -3,6 +3,8 @@ import SearchBar from '../components/SearchBar'
 import IdeaCard from '../components/IdeaCard'
 import './Explore.css'
 
+const API_URL = import.meta.env.VITE_API_URL
+
 function Explore() {
   const [ideas, setIdeas] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
@@ -10,7 +12,7 @@ function Explore() {
   const [error, setError] = useState('')
 
   useEffect(() => {
-    fetch('https://dummyjson.com/products')
+    fetch(`${API_URL}/ideas`)
       .then((response) => {
         if (!response.ok) {
           throw new Error('Failed to fetch ideas')
@@ -19,15 +21,16 @@ function Explore() {
         return response.json()
       })
       .then((data) => {
-        const formattedIdeas = data.products.map((product) => ({
-          id: product.id,
-          title: product.title,
-          description: product.description,
-          category: product.category,
-          postedBy: 'Vault Community'
-        }))
+        const publicIdeas = data
+          .filter(
+            (idea) => idea.privacy === 'public'
+          )
+          .map((idea) => ({
+            ...idea,
+            postedBy: `User ${idea.user_id}`
+          }))
 
-        setIdeas(formattedIdeas)
+        setIdeas(publicIdeas)
         setLoading(false)
       })
       .catch(() => {
@@ -44,8 +47,6 @@ function Explore() {
 
   return (
     <main className="explore-page">
-      
-
       <SearchBar
         searchTerm={searchTerm}
         onSearch={setSearchTerm}
@@ -55,20 +56,27 @@ function Explore() {
 
       {error && <p>{error}</p>}
 
-      {!loading && !error && filteredIdeas.length === 0 && (
-        <p>Oops, we don't seem to have that right now.</p>
-      )}
+      {!loading &&
+        !error &&
+        filteredIdeas.length === 0 && (
+          <p>
+            Oops, we don't seem to have that right
+            now.
+          </p>
+        )}
 
-      {!loading && !error && filteredIdeas.length > 0 && (
-        <div className="idea-grid">
-          {filteredIdeas.map((idea) => (
-            <IdeaCard
-              key={idea.id}
-              idea={idea}
-            />
-          ))}
-        </div>
-      )}
+      {!loading &&
+        !error &&
+        filteredIdeas.length > 0 && (
+          <div className="idea-grid">
+            {filteredIdeas.map((idea) => (
+              <IdeaCard
+                key={idea.id}
+                idea={idea}
+              />
+            ))}
+          </div>
+        )}
     </main>
   )
 }

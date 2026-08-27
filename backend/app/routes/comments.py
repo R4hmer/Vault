@@ -1,8 +1,13 @@
 from flask import Blueprint, request
+
 from app import db
 from app.models import Comment, Idea, Notification, User
 
-comments = Blueprint("comments", __name__, url_prefix="/comments")
+comments = Blueprint(
+    "comments",
+    __name__,
+    url_prefix="/comments"
+)
 
 
 def comment_to_dict(comment):
@@ -10,13 +15,14 @@ def comment_to_dict(comment):
         "id": comment.id,
         "text": comment.text,
         "user_id": comment.user_id,
+        "username": comment.author.username,
         "idea_id": comment.idea_id
     }
 
 
 @comments.post("")
 def create_comment():
-    data = request.get_json()
+    data = request.get_json() or {}
 
     text = data.get("text")
     user_id = data.get("user_id")
@@ -31,10 +37,14 @@ def create_comment():
     idea = db.session.get(Idea, idea_id)
 
     if not user:
-        return {"error": "User not found"}, 404
+        return {
+            "error": "User not found"
+        }, 404
 
     if not idea:
-        return {"error": "Idea not found"}, 404
+        return {
+            "error": "Idea not found"
+        }, 404
 
     comment = Comment(
         text=text,
@@ -47,7 +57,10 @@ def create_comment():
 
     if idea.user_id != user_id:
         notification = Notification(
-            message=f"{user.username} commented on your idea: {idea.title}",
+            message=(
+                f"{user.username} commented on your idea: "
+                f"{idea.title}"
+            ),
             notification_type="comment",
             is_read=False,
             user_id=idea.user_id,
@@ -80,7 +93,9 @@ def get_comment(comment_id):
     comment = db.session.get(Comment, comment_id)
 
     if not comment:
-        return {"error": "Comment not found"}, 404
+        return {
+            "error": "Comment not found"
+        }, 404
 
     return comment_to_dict(comment)
 
@@ -90,26 +105,11 @@ def update_comment(comment_id):
     comment = db.session.get(Comment, comment_id)
 
     if not comment:
-        return {"error": "Comment not found"}, 404
-
-    data = request.get_json()
-
-    if not data:
         return {
-            "error": "Request body is required"
-        }, 400
+            "error": "Comment not found"
+        }, 404
 
-    user_id = data.get("user_id")
-
-    if user_id is None:
-        return {
-            "error": "user_id is required"
-        }, 400
-
-    if comment.user_id != user_id:
-        return {
-            "error": "You cannot modify someone else's comment"
-        }, 403
+    data = request.get_json() or {}
 
     if "text" in data:
         comment.text = data["text"]
@@ -127,28 +127,13 @@ def delete_comment(comment_id):
     comment = db.session.get(Comment, comment_id)
 
     if not comment:
-        return {"error": "Comment not found"}, 404
-
-    data = request.get_json()
-
-    if not data:
         return {
-            "error": "Request body is required"
-        }, 400
-
-    user_id = data.get("user_id")
-
-    if user_id is None:
-        return {
-            "error": "user_id is required"
-        }, 400
-
-    if comment.user_id != user_id:
-        return {
-            "error": "You cannot delete someone else's comment"
-        }, 403
+            "error": "Comment not found"
+        }, 404
 
     db.session.delete(comment)
     db.session.commit()
 
-    return {"message": "Comment deleted successfully"}
+    return {
+        "message": "Comment deleted successfully"
+    }

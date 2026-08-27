@@ -1,22 +1,102 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Comments from './Comments'
+
+const API_URL = import.meta.env.VITE_API_URL
+const CURRENT_USER_ID = 1
 
 function IdeaCard({ idea }) {
   const [likes, setLikes] = useState(0)
-  const [dislikes, setDislikes] = useState(0)
+  const [isLiked, setIsLiked] = useState(false)
   const [isFavourite, setIsFavourite] = useState(false)
   const [showComments, setShowComments] = useState(false)
+  const [loading, setLoading] = useState(false)
 
-  function handlePostedByClick(event) {
-    event.stopPropagation()
+  useEffect(() => {
+    fetch(
+      `${API_URL}/ideas/${idea.id}/engagement?user_id=${CURRENT_USER_ID}`
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Failed to load engagement')
+        }
+
+        return response.json()
+      })
+      .then((data) => {
+        setLikes(data.likes_count)
+        setIsLiked(data.is_liked)
+        setIsFavourite(data.is_favourited)
+      })
+      .catch(() => {})
+  }, [idea.id])
+
+  async function handleLike() {
+    if (loading) {
+      return
+    }
+
+    setLoading(true)
+
+    try {
+      const response = await fetch(
+        `${API_URL}/ideas/${idea.id}/like`,
+        {
+          method: isLiked ? 'DELETE' : 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            user_id: CURRENT_USER_ID
+          })
+        }
+      )
+
+      if (!response.ok) {
+        throw new Error('Failed to update like')
+      }
+
+      setIsLiked(!isLiked)
+      setLikes((current) =>
+        isLiked ? current - 1 : current + 1
+      )
+    } catch {
+      alert('Unable to update like.')
+    } finally {
+      setLoading(false)
+    }
   }
 
-  function handleCommentsClick() {
-    setShowComments(true)
-  }
+  async function handleFavourite() {
+    if (loading) {
+      return
+    }
 
-  function handleCloseComments() {
-    setShowComments(false)
+    setLoading(true)
+
+    try {
+      const response = await fetch(
+        `${API_URL}/ideas/${idea.id}/favourite`,
+        {
+          method: isFavourite ? 'DELETE' : 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            user_id: CURRENT_USER_ID
+          })
+        }
+      )
+
+      if (!response.ok) {
+        throw new Error('Failed to update favourite')
+      }
+
+      setIsFavourite(!isFavourite)
+    } catch {
+      alert('Unable to update favourite.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -34,15 +114,14 @@ function IdeaCard({ idea }) {
           <div className="idea-card-meta">
             <button
               className="posted-by"
-              onClick={handlePostedByClick}
               type="button"
             >
-              Posted by {idea.postedBy}
+              Posted by {idea.postedBy || `User ${idea.user_id}`}
             </button>
 
             <button
               className="comment-count"
-              onClick={handleCommentsClick}
+              onClick={() => setShowComments(true)}
               type="button"
             >
               Comments
@@ -53,24 +132,19 @@ function IdeaCard({ idea }) {
         <div className="idea-card-actions">
           <button
             type="button"
-            onClick={() => setLikes(likes + 1)}
+            onClick={handleLike}
             aria-label="Like idea"
+            disabled={loading}
           >
-            👍 {likes}
+            {isLiked ? '👍' : '👍'} {likes}
           </button>
+
 
           <button
             type="button"
-            onClick={() => setDislikes(dislikes + 1)}
-            aria-label="Dislike idea"
-          >
-            👎 {dislikes}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setIsFavourite(!isFavourite)}
+            onClick={handleFavourite}
             aria-label="Favourite idea"
+            disabled={loading}
           >
             {isFavourite ? '♥' : '♡'}
           </button>
@@ -78,11 +152,13 @@ function IdeaCard({ idea }) {
       </article>
 
       {showComments && (
-        <Comments onClose={handleCloseComments} />
+        <Comments
+          ideaId={idea.id}
+          onClose={() => setShowComments(false)}
+        />
       )}
     </>
   )
 }
 
 export default IdeaCard
-

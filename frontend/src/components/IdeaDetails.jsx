@@ -8,17 +8,24 @@ function IdeaDetails({
   onEditTask,
   onDeleteTask
 }) {
-  const [showTaskInput, setShowTaskInput] = useState(false)
+  const [showTaskInput, setShowTaskInput] =
+    useState(false)
   const [taskTitle, setTaskTitle] = useState('')
-  const [editingTaskId, setEditingTaskId] = useState(null)
-  const [editingTaskTitle, setEditingTaskTitle] = useState('')
+  const [editingTaskId, setEditingTaskId] =
+    useState(null)
+  const [editingTaskTitle, setEditingTaskTitle] =
+    useState('')
 
   function handleAddTask() {
     if (!taskTitle.trim()) {
       return
     }
 
-    onAddTask(idea.id, taskTitle.trim())
+    onAddTask(
+      idea.id,
+      taskTitle.trim()
+    )
+
     setTaskTitle('')
     setShowTaskInput(false)
   }
@@ -50,7 +57,9 @@ function IdeaDetails({
     >
       <div
         className="idea-modal"
-        onClick={(event) => event.stopPropagation()}
+        onClick={(event) =>
+          event.stopPropagation()
+        }
       >
         <button
           className="modal-close"
@@ -62,7 +71,9 @@ function IdeaDetails({
 
         <div className="modal-header">
           <span className="modal-privacy">
-            {idea.isPublic ? 'Public' : 'Private'}
+            {idea.privacy === 'public'
+              ? 'Public'
+              : 'Private'}
           </span>
 
           <h2>{idea.title}</h2>
@@ -76,7 +87,11 @@ function IdeaDetails({
 
             <button
               className="add-task-button"
-              onClick={() => setShowTaskInput(!showTaskInput)}
+              onClick={() =>
+                setShowTaskInput(
+                  !showTaskInput
+                )
+              }
             >
               + Add Task
             </button>
@@ -87,7 +102,9 @@ function IdeaDetails({
               <input
                 value={taskTitle}
                 onChange={(event) =>
-                  setTaskTitle(event.target.value)
+                  setTaskTitle(
+                    event.target.value
+                  )
                 }
                 placeholder="Enter a roadmap task..."
                 onKeyDown={(event) => {
@@ -113,17 +130,22 @@ function IdeaDetails({
                   className="task-item"
                   key={task.id}
                 >
-                  {editingTaskId === task.id ? (
+                  {editingTaskId ===
+                  task.id ? (
                     <div className="task-edit-row">
                       <input
-                        value={editingTaskTitle}
+                        value={
+                          editingTaskTitle
+                        }
                         onChange={(event) =>
                           setEditingTaskTitle(
                             event.target.value
                           )
                         }
                         onKeyDown={(event) => {
-                          if (event.key === 'Enter') {
+                          if (
+                            event.key === 'Enter'
+                          ) {
                             saveEditedTask()
                           }
                         }}
@@ -131,19 +153,25 @@ function IdeaDetails({
 
                       <button
                         className="task-save-button"
-                        onClick={saveEditedTask}
+                        onClick={
+                          saveEditedTask
+                        }
                       >
                         Save
                       </button>
                     </div>
                   ) : (
                     <>
-                      <span>{task.title}</span>
+                      <span>
+                        {task.title}
+                      </span>
 
                       <div className="task-actions">
                         <button
                           onClick={() =>
-                            startEditingTask(task)
+                            startEditingTask(
+                              task
+                            )
                           }
                           aria-label="Edit task"
                         >
@@ -170,13 +198,15 @@ function IdeaDetails({
           ) : (
             !showTaskInput && (
               <div className="empty-state">
-                <p>No roadmap tasks yet.</p>
+                <p>
+                  No roadmap tasks yet.
+                </p>
               </div>
             )
           )}
         </div>
 
-        {idea.isPublic && (
+        {idea.privacy === 'public' && (
           <div className="modal-section">
             <h3>Feedback</h3>
 
@@ -188,7 +218,9 @@ function IdeaDetails({
 
         <button
           className="modal-delete-button"
-          onClick={() => onDeleteIdea(idea.id)}
+          onClick={() =>
+            onDeleteIdea(idea.id)
+          }
           aria-label="Delete idea"
         >
           🗑️
