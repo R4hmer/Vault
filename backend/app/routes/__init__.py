@@ -21,6 +21,7 @@ def health():
 
 from app.routes import ideas
 from app.routes import comments
-from app.routes import likes
 from app.routes import misc
+from app.routes import likes
 from app.routes import favourites
+from app.routes import tasks
