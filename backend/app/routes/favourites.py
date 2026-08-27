@@ -1,20 +1,28 @@
-from flask import request
+from flask import Blueprint, request
 from app import db
-from app.models import User, Idea, Favourite
-from app.routes import routes
+from app.models import Favourite, Idea, User
+
+favourites = Blueprint("favourites", __name__, url_prefix="/ideas")
 
 
-@routes.post("/ideas/<int:idea_id>/favourite")
+def favourite_to_dict(favourite):
+    return {
+        "id": favourite.id,
+        "idea_id": favourite.idea_id,
+        "user_id": favourite.user_id
+    }
+
+
+@favourites.post("/<int:idea_id>/favourite")
 def favourite_idea(idea_id):
     data = request.get_json()
-
     user_id = data.get("user_id")
 
     if not user_id:
         return {"error": "user_id is required"}, 400
 
-    user = User.query.get(user_id)
-    idea = Idea.query.get(idea_id)
+    user = db.session.get(User, user_id)
+    idea = db.session.get(Idea, idea_id)
 
     if not user:
         return {"error": "User not found"}, 404
@@ -40,18 +48,13 @@ def favourite_idea(idea_id):
 
     return {
         "message": "Idea favourited successfully",
-        "favourite": {
-            "id": favourite.id,
-            "user_id": favourite.user_id,
-            "idea_id": favourite.idea_id
-        }
+        "favourite": favourite_to_dict(favourite)
     }, 201
 
 
-@routes.delete("/ideas/<int:idea_id>/favourite")
+@favourites.delete("/<int:idea_id>/favourite")
 def unfavourite_idea(idea_id):
     data = request.get_json()
-
     user_id = data.get("user_id")
 
     if not user_id:
@@ -68,4 +71,4 @@ def unfavourite_idea(idea_id):
     db.session.delete(favourite)
     db.session.commit()
 
-    return {"message": "Idea unfavourited successfully"}, 200
+    return {"message": "Idea unfavourited successfully"}

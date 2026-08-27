@@ -1,10 +1,22 @@
-from flask import request
+from flask import Blueprint, request
 from app import db
-from app.models import User, Idea, RoadmapTask
-from app.routes import routes
+from app.models import Idea, Notification, RoadmapTask, User
+
+tasks = Blueprint("tasks", __name__, url_prefix="/tasks")
 
 
-@routes.post("/tasks")
+def task_to_dict(task):
+    return {
+        "id": task.id,
+        "title": task.title,
+        "description": task.description,
+        "status": task.status,
+        "user_id": task.user_id,
+        "idea_id": task.idea_id
+    }
+
+
+@tasks.post("")
 def create_task():
     data = request.get_json()
 
@@ -15,16 +27,18 @@ def create_task():
 
     if not title or not description or not user_id:
         return {
-            "error": "title, description, and user_id are required"
+            "error": "title, description and user_id are required"
         }, 400
 
-    user = User.query.get(user_id)
+    user = db.session.get(User, user_id)
 
     if not user:
         return {"error": "User not found"}, 404
 
+    idea = None
+
     if idea_id:
-        idea = Idea.query.get(idea_id)
+        idea = db.session.get(Idea, idea_id)
 
         if not idea:
             return {"error": "Idea not found"}, 404
@@ -37,58 +51,51 @@ def create_task():
     )
 
     db.session.add(task)
+    db.session.flush()
+
+    if idea and idea.user_id != user_id:
+        notification = Notification(
+            message=f"{user.username} created a roadmap task for your idea: {idea.title}",
+            notification_type="task",
+            is_read=False,
+            user_id=idea.user_id,
+            idea_id=idea.id,
+            task_id=task.id
+        )
+
+        db.session.add(notification)
+
     db.session.commit()
 
     return {
         "message": "Task created successfully",
-        "task": {
-            "id": task.id,
-            "title": task.title,
-            "description": task.description,
-            "status": task.status,
-            "user_id": task.user_id,
-            "idea_id": task.idea_id
-        }
+        "task": task_to_dict(task)
     }, 201
 
 
-@routes.get("/tasks")
+@tasks.get("")
 def get_tasks():
-    tasks = RoadmapTask.query.all()
+    tasks_list = RoadmapTask.query.all()
 
     return [
-        {
-            "id": task.id,
-            "title": task.title,
-            "description": task.description,
-            "status": task.status,
-            "user_id": task.user_id,
-            "idea_id": task.idea_id
-        }
-        for task in tasks
-    ], 200
+        task_to_dict(task)
+        for task in tasks_list
+    ]
 
 
-@routes.get("/tasks/<int:task_id>")
+@tasks.get("/<int:task_id>")
 def get_task(task_id):
-    task = RoadmapTask.query.get(task_id)
+    task = db.session.get(RoadmapTask, task_id)
 
     if not task:
         return {"error": "Task not found"}, 404
 
-    return {
-        "id": task.id,
-        "title": task.title,
-        "description": task.description,
-        "status": task.status,
-        "user_id": task.user_id,
-        "idea_id": task.idea_id
-    }, 200
+    return task_to_dict(task)
 
 
-@routes.put("/tasks/<int:task_id>")
+@tasks.put("/<int:task_id>")
 def update_task(task_id):
-    task = RoadmapTask.query.get(task_id)
+    task = db.session.get(RoadmapTask, task_id)
 
     if not task:
         return {"error": "Task not found"}, 404
@@ -104,35 +111,17 @@ def update_task(task_id):
     if "status" in data:
         task.status = data["status"]
 
-    if "idea_id" in data:
-        idea_id = data["idea_id"]
-
-        if idea_id:
-            idea = Idea.query.get(idea_id)
-
-            if not idea:
-                return {"error": "Idea not found"}, 404
-
-        task.idea_id = idea_id
-
     db.session.commit()
 
     return {
         "message": "Task updated successfully",
-        "task": {
-            "id": task.id,
-            "title": task.title,
-            "description": task.description,
-            "status": task.status,
-            "user_id": task.user_id,
-            "idea_id": task.idea_id
-        }
-    }, 200
+        "task": task_to_dict(task)
+    }
 
 
-@routes.delete("/tasks/<int:task_id>")
+@tasks.delete("/<int:task_id>")
 def delete_task(task_id):
-    task = RoadmapTask.query.get(task_id)
+    task = db.session.get(RoadmapTask, task_id)
 
     if not task:
         return {"error": "Task not found"}, 404
@@ -140,4 +129,4 @@ def delete_task(task_id):
     db.session.delete(task)
     db.session.commit()
 
-    return {"message": "Task deleted successfully"}, 200
+    return {"message": "Task deleted successfully"}
