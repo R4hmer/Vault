@@ -1,45 +1,101 @@
 .notifications-page {
   min-height: 70vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 60px 24px;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 60px 6%;
 }
 
-.notifications-content {
-  max-width: 600px;
-  text-align: center;
+.notifications-container {
+  max-width: 800px;
+  margin: 0 auto;
 }
 
-.notification-icon {
-  margin-bottom: 20px;
-  color: #742111;
-  font-size: 60px;
+.notifications-header {
+  padding-bottom: 25px;
+  border-bottom: 1px solid #D0CCA4;
 }
 
-.notifications-content h1 {
-  margin: 0 0 20px;
+.notifications-header h1 {
+  margin: 0 0 8px;
   color: #742111;
   font-family: 'Playfair Display', serif;
-  font-size: 2.8rem;
+  font-size: 2rem;
   font-weight: 500;
 }
 
-.notifications-content p {
-  margin: 0 0 10px;
+.notifications-header p {
+  margin: 0;
   color: #58552D;
-  font-size: 1.2rem;
+}
+
+.notifications-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.notification-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 4px;
+  border-bottom: 1px solid #D0CCA4;
+}
+
+.notification-item p {
+  margin: 0;
+  color: #58552D;
+  line-height: 1.5;
+}
+
+.notification-item.unread {
   font-weight: 600;
 }
 
-.notifications-content span {
-  display: block;
-  color: #58552D;
-  line-height: 1.7;
+.notification-item.read {
+  opacity: 0.65;
 }
 
-.notifications-content button {
-  margin-top: 30px;
+.notification-dot {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #742111;
+}
+
+.notification-item.read .notification-dot {
+  background: #D0CCA4;
+}
+
+.notifications-status,
+.notifications-error {
+  padding: 25px 0;
+  color: #58552D;
+}
+
+.notifications-error {
+  color: #742111;
+}
+
+.notifications-empty {
+  padding: 40px 0;
+  color: #58552D;
+}
+
+.notifications-empty p {
+  margin: 0;
+}
+
+.notifications-empty h1 {
+  margin: 0 0 10px;
+  color: #742111;
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 500;
+}
+
+.notifications-empty button {
+  margin-top: 25px;
   padding: 12px 28px;
   border: none;
   border-radius: 6px;
@@ -47,9 +103,18 @@
   color: #FFF8E7;
   font-family: 'DM Sans', sans-serif;
   cursor: pointer;
-  transition: background 0.2s ease;
 }
 
-.notifications-content button:hover {
+.notifications-empty button:hover {
   background: #A87A57;
+}
+
+@media (max-width: 600px) {
+  .notifications-page {
+    padding: 40px 24px;
+  }
+
+  .notifications-header h1 {
+    font-size: 1.7rem;
+  }
 }
