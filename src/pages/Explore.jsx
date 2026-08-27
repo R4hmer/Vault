@@ -23,7 +23,8 @@ function Explore() {
           id: product.id,
           title: product.title,
           description: product.description,
-          category: product.category
+          category: product.category,
+          postedBy: 'Vault Community'
         }))
 
         setIdeas(formattedIdeas)
@@ -61,7 +62,10 @@ function Explore() {
       {!loading && !error && filteredIdeas.length > 0 && (
         <div className="idea-grid">
           {filteredIdeas.map((idea) => (
-            <IdeaCard key={idea.id} idea={idea} />
+            <IdeaCard
+              key={idea.id}
+              idea={idea}
+            />
           ))}
         </div>
       )}
