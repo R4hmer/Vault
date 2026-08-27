@@ -11,53 +11,78 @@ function IdeaCard({ idea }) {
     event.stopPropagation()
   }
 
+  function handleCommentsClick() {
+    setShowComments(true)
+  }
+
+  function handleCloseComments() {
+    setShowComments(false)
+  }
+
   return (
-    <article className="idea-card">
-      <div className="idea-card-content">
-        <span className="idea-category">
-          {idea.category}
-        </span>
+    <>
+      <article className="idea-card">
+        <div className="idea-card-content">
+          <span className="idea-category">
+            {idea.category}
+          </span>
 
-        <h2>{idea.title}</h2>
+          <h2>{idea.title}</h2>
 
-        <p>{idea.description}</p>
+          <p>{idea.description}</p>
 
-        <div className="idea-card-meta">
-          <button
-            className="posted-by"
-            onClick={handlePostedByClick}
-          >
-            Posted by {idea.postedBy}
-          </button>
+          <div className="idea-card-meta">
+            <button
+              className="posted-by"
+              onClick={handlePostedByClick}
+              type="button"
+            >
+              Posted by {idea.postedBy}
+            </button>
 
-          <button
-            className="comment-count"
-            onClick={() => setShowComments(!showComments)}
-          >
-            Comments
-          </button>
+            <button
+              className="comment-count"
+              onClick={handleCommentsClick}
+              type="button"
+            >
+              Comments
+            </button>
+          </div>
         </div>
 
-        {showComments && <Comments />}
-      </div>
+        <div className="idea-card-actions">
+          <button
+            type="button"
+            onClick={() => setLikes(likes + 1)}
+            aria-label="Like idea"
+          >
+            👍 {likes}
+          </button>
 
-      <div className="idea-card-actions">
-        <button onClick={() => setLikes(likes + 1)}>
-          👍 {likes}
-        </button>
+          <button
+            type="button"
+            onClick={() => setDislikes(dislikes + 1)}
+            aria-label="Dislike idea"
+          >
+            👎 {dislikes}
+          </button>
 
-        <button onClick={() => setDislikes(dislikes + 1)}>
-          👎 {dislikes}
-        </button>
+          <button
+            type="button"
+            onClick={() => setIsFavourite(!isFavourite)}
+            aria-label="Favourite idea"
+          >
+            {isFavourite ? '♥' : '♡'}
+          </button>
+        </div>
+      </article>
 
-        <button
-          onClick={() => setIsFavourite(!isFavourite)}
-        >
-          {isFavourite ? '♥' : '♡'}
-        </button>
-      </div>
-    </article>
+      {showComments && (
+        <Comments onClose={handleCloseComments} />
+      )}
+    </>
   )
 }
 
 export default IdeaCard
+

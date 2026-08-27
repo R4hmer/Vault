@@ -1,7 +1,23 @@
 import { useState } from 'react'
 
-function Comments() {
-  const [comments, setComments] = useState([])
+function Comments({ onClose }) {
+  const [comments, setComments] = useState([
+    {
+      id: 1,
+      username: 'Amina',
+      text: 'This is actually a really interesting idea.',
+      likes: 3,
+      liked: false
+    },
+    {
+      id: 2,
+      username: 'Sam',
+      text: 'I could definitely see this being developed further.',
+      likes: 1,
+      liked: false
+    }
+  ])
+
   const [commentText, setCommentText] = useState('')
 
   function handleSubmit(event) {
@@ -13,6 +29,7 @@ function Comments() {
 
     const newComment = {
       id: Date.now(),
+      username: 'You',
       text: commentText.trim(),
       likes: 0,
       liked: false
@@ -43,55 +60,73 @@ function Comments() {
   }
 
   return (
-    <div className="comments-section">
-      <h3>Comments</h3>
-
-      <form
-        className="comment-form"
-        onSubmit={handleSubmit}
+    <div className="comments-overlay" onClick={onClose}>
+      <div
+        className="comments-modal"
+        onClick={(event) => event.stopPropagation()}
       >
-        <input
-          type="text"
-          value={commentText}
-          onChange={(event) =>
-            setCommentText(event.target.value)
-          }
-          placeholder="Leave a comment..."
-        />
+        <div className="comments-header">
+          <h2>Comments</h2>
 
-        <button type="submit">
-          Post
-        </button>
-      </form>
-
-      <div className="comments-list">
-        {comments.map((comment) => (
-          <div
-            className="comment"
-            key={comment.id}
+          <button
+            className="comments-close"
+            onClick={onClose}
+            type="button"
+            aria-label="Close comments"
           >
-            <p>{comment.text}</p>
+            ×
+          </button>
+        </div>
 
-            <button
-              className={`comment-like ${
-                comment.liked ? 'liked' : ''
-              }`}
-              onClick={() => handleLike(comment.id)}
-              aria-label="Like comment"
-            >
-              ♥ {comment.likes}
-            </button>
-          </div>
-        ))}
+        <div className="comments-list">
+          {comments.map((comment) => (
+            <div className="comment" key={comment.id}>
+              <div className="comment-content">
+                <strong>{comment.username}</strong>
+                <p>{comment.text}</p>
+              </div>
 
-        {comments.length === 0 && (
-          <p className="no-comments">
-            No comments yet.
-          </p>
-        )}
+              <button
+                className={`comment-like ${
+                  comment.liked ? 'liked' : ''
+                }`}
+                onClick={() => handleLike(comment.id)}
+                type="button"
+                aria-label="Like comment"
+              >
+                ♥ {comment.likes}
+              </button>
+            </div>
+          ))}
+
+          {comments.length === 0 && (
+            <p className="no-comments">
+              No comments yet.
+            </p>
+          )}
+        </div>
+
+        <form
+          className="comment-form"
+          onSubmit={handleSubmit}
+        >
+          <input
+            type="text"
+            value={commentText}
+            onChange={(event) =>
+              setCommentText(event.target.value)
+            }
+            placeholder="Leave a comment..."
+          />
+
+          <button type="submit">
+            Post
+          </button>
+        </form>
       </div>
     </div>
   )
 }
 
 export default Comments
+

@@ -44,7 +44,7 @@ function Explore() {
 
   return (
     <main className="explore-page">
-      <h1>EXPLORE</h1>
+      
 
       <SearchBar
         searchTerm={searchTerm}
