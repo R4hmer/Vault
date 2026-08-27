@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
+import { getNotifications } from '../api'
 import './Notifications.css'
 
-const API_URL = import.meta.env.VITE_API_URL
 const CURRENT_USER_ID = 1
 
 function Notifications() {
@@ -10,28 +10,19 @@ function Notifications() {
   const [error, setError] = useState('')
 
   useEffect(() => {
+    async function loadNotifications() {
+      try {
+        const data = await getNotifications(CURRENT_USER_ID)
+        setNotifications(data)
+      } catch {
+        setError('Unable to load notifications.')
+      } finally {
+        setLoading(false)
+      }
+    }
+
     loadNotifications()
   }, [])
-
-  async function loadNotifications() {
-    try {
-      const response = await fetch(
-        `${API_URL}/notifications/user/${CURRENT_USER_ID}`
-      )
-
-      if (!response.ok) {
-        throw new Error('Failed to load notifications')
-      }
-
-      const data = await response.json()
-
-      setNotifications(data)
-    } catch {
-      setError('Unable to load notifications.')
-    } finally {
-      setLoading(false)
-    }
-  }
 
   return (
     <main className="notifications-page">
@@ -42,36 +33,28 @@ function Notifications() {
 
         <p>Your notifications are waiting.</p>
 
-        {loading && <p>Loading...</p>}
+        {loading && <span>Loading...</span>}
 
-        {error && <p>{error}</p>}
+        {error && <span>{error}</span>}
 
-        {!loading &&
-          !error &&
-          notifications.length === 0 && (
-            <span>
-              You don't have any notifications yet.
-            </span>
-          )}
+        {!loading && !error && notifications.length === 0 && (
+          <span>
+            You don't have any notifications yet.
+          </span>
+        )}
 
-        {!loading &&
-          !error &&
-          notifications.length > 0 && (
-            <div className="notifications-list">
-              {notifications.map((notification) => (
-                <div
-                  className={`notification-item ${
-                    notification.is_read
-                      ? 'read'
-                      : 'unread'
-                  }`}
-                  key={notification.id}
-                >
-                  {notification.message}
-                </div>
-              ))}
-            </div>
-          )}
+        {!loading && !error && notifications.length > 0 && (
+          <div className="notifications-list">
+            {notifications.map((notification) => (
+              <div
+                className="notification-item"
+                key={notification.id}
+              >
+                {notification.message}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </main>
   )
