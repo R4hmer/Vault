@@ -9,6 +9,7 @@ from app.routes.likes import likes
 from app.routes.favourites import favourites
 from app.routes.tasks import tasks
 from app.routes.notifications import notifications
+from app.routes.auth import auth
 
 routes.register_blueprint(ideas)
 routes.register_blueprint(comments)
@@ -17,3 +18,4 @@ routes.register_blueprint(favourites)
 routes.register_blueprint(tasks)
 routes.register_blueprint(notifications)
 routes.register_blueprint(misc)
+routes.register_blueprint(auth)
