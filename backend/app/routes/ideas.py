@@ -123,6 +123,18 @@ def update_idea(idea_id):
             "error": "Request body is required"
         }, 400
 
+    user_id = data.get("user_id")
+
+    if user_id is None:
+        return {
+            "error": "user_id is required"
+        }, 400
+
+    if idea.user_id != user_id:
+        return {
+            "error": "You cannot modify someone else's idea"
+        }, 403
+
     if "title" in data:
         idea.title = data["title"]
 
@@ -162,6 +174,25 @@ def delete_idea(idea_id):
         return {
             "error": "Idea not found"
         }, 404
+
+    data = request.get_json()
+
+    if not data:
+        return {
+            "error": "Request body is required"
+        }, 400
+
+    user_id = data.get("user_id")
+
+    if user_id is None:
+        return {
+            "error": "user_id is required"
+        }, 400
+
+    if idea.user_id != user_id:
+        return {
+            "error": "You cannot delete someone else's idea"
+        }, 403
 
     db.session.delete(idea)
     db.session.commit()

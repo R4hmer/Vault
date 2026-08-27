@@ -102,6 +102,23 @@ def update_task(task_id):
 
     data = request.get_json()
 
+    if not data:
+        return {
+            "error": "Request body is required"
+        }, 400
+
+    user_id = data.get("user_id")
+
+    if user_id is None:
+        return {
+            "error": "user_id is required"
+        }, 400
+
+    if task.user_id != user_id:
+        return {
+            "error": "You cannot modify someone else's task"
+        }, 403
+
     if "title" in data:
         task.title = data["title"]
 
@@ -125,6 +142,25 @@ def delete_task(task_id):
 
     if not task:
         return {"error": "Task not found"}, 404
+
+    data = request.get_json()
+
+    if not data:
+        return {
+            "error": "Request body is required"
+        }, 400
+
+    user_id = data.get("user_id")
+
+    if user_id is None:
+        return {
+            "error": "user_id is required"
+        }, 400
+
+    if task.user_id != user_id:
+        return {
+            "error": "You cannot delete someone else's task"
+        }, 403
 
     db.session.delete(task)
     db.session.commit()

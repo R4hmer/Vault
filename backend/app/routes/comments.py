@@ -94,6 +94,23 @@ def update_comment(comment_id):
 
     data = request.get_json()
 
+    if not data:
+        return {
+            "error": "Request body is required"
+        }, 400
+
+    user_id = data.get("user_id")
+
+    if user_id is None:
+        return {
+            "error": "user_id is required"
+        }, 400
+
+    if comment.user_id != user_id:
+        return {
+            "error": "You cannot modify someone else's comment"
+        }, 403
+
     if "text" in data:
         comment.text = data["text"]
 
@@ -111,6 +128,25 @@ def delete_comment(comment_id):
 
     if not comment:
         return {"error": "Comment not found"}, 404
+
+    data = request.get_json()
+
+    if not data:
+        return {
+            "error": "Request body is required"
+        }, 400
+
+    user_id = data.get("user_id")
+
+    if user_id is None:
+        return {
+            "error": "user_id is required"
+        }, 400
+
+    if comment.user_id != user_id:
+        return {
+            "error": "You cannot delete someone else's comment"
+        }, 403
 
     db.session.delete(comment)
     db.session.commit()
