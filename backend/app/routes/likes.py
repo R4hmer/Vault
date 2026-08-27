@@ -87,7 +87,7 @@ def like_idea(idea_id):
 
     if idea.user_id != user_id:
         notification = Notification(
-            message=f"{user.username} liked your idea: {idea.title}",
+            message=f"@{user.username} liked this idea",
             notification_type="like",
             is_read=False,
             user_id=idea.user_id,
