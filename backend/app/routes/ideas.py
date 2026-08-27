@@ -3,26 +3,34 @@ from flask import Blueprint, request
 from app import db
 from app.models import Idea, User
 
+
 ideas = Blueprint("ideas", __name__)
+
+
+def idea_to_dict(idea):
+    return {
+        "id": idea.id,
+        "title": idea.title,
+        "description": idea.description,
+        "category": idea.category,
+        "status": idea.status,
+        "privacy": idea.privacy,
+        "user_id": idea.user_id,
+        "likes_count": len(idea.likes),
+        "favourites_count": len(idea.favourites),
+        "comments_count": len(idea.comments)
+    }
 
 
 @ideas.get("/ideas")
 def get_ideas():
-    ideas = db.session.execute(
+    ideas_list = db.session.execute(
         db.select(Idea)
     ).scalars().all()
 
     return [
-        {
-            "id": idea.id,
-            "title": idea.title,
-            "description": idea.description,
-            "category": idea.category,
-            "status": idea.status,
-            "privacy": idea.privacy,
-            "user_id": idea.user_id
-        }
-        for idea in ideas
+        idea_to_dict(idea)
+        for idea in ideas_list
     ]
 
 
@@ -35,15 +43,27 @@ def get_idea(idea_id):
             "error": "Idea not found"
         }, 404
 
-    return {
-        "id": idea.id,
-        "title": idea.title,
-        "description": idea.description,
-        "category": idea.category,
-        "status": idea.status,
-        "privacy": idea.privacy,
-        "user_id": idea.user_id
-    }
+    return idea_to_dict(idea)
+
+
+@ideas.get("/users/<int:user_id>/public-ideas")
+def get_public_user_ideas(user_id):
+    user = db.session.get(User, user_id)
+
+    if user is None:
+        return {
+            "error": "User not found"
+        }, 404
+
+    public_ideas = Idea.query.filter_by(
+        user_id=user_id,
+        privacy="public"
+    ).all()
+
+    return [
+        idea_to_dict(idea)
+        for idea in public_ideas
+    ]
 
 
 @ideas.post("/ideas")
@@ -95,15 +115,7 @@ def create_idea():
 
     return {
         "message": "Idea created successfully",
-        "idea": {
-            "id": idea.id,
-            "title": idea.title,
-            "description": idea.description,
-            "category": idea.category,
-            "status": idea.status,
-            "privacy": idea.privacy,
-            "user_id": idea.user_id
-        }
+        "idea": idea_to_dict(idea)
     }, 201
 
 
@@ -154,15 +166,7 @@ def update_idea(idea_id):
 
     return {
         "message": "Idea updated successfully",
-        "idea": {
-            "id": idea.id,
-            "title": idea.title,
-            "description": idea.description,
-            "category": idea.category,
-            "status": idea.status,
-            "privacy": idea.privacy,
-            "user_id": idea.user_id
-        }
+        "idea": idea_to_dict(idea)
     }
 
 

@@ -12,6 +12,14 @@ auth = Blueprint(
 )
 
 
+def user_to_dict(user):
+    return {
+        "id": user.id,
+        "username": user.username,
+        "email": user.email,
+    }
+
+
 @auth.post("/register")
 def register():
     data = request.get_json() or {}
@@ -54,11 +62,7 @@ def register():
 
     return {
         "message": "Registration successful",
-        "user": {
-            "id": user.id,
-            "username": user.username,
-            "email": user.email
-        }
+        "user": user_to_dict(user)
     }, 201
 
 
@@ -93,9 +97,55 @@ def login():
 
     return {
         "message": "Login successful",
-        "user": {
-            "id": user.id,
-            "username": user.username,
-            "email": user.email
-        }
+        "user": user_to_dict(user)
+    }
+
+
+@auth.put("/profile/<int:user_id>")
+def update_profile(user_id):
+    data = request.get_json() or {}
+
+    username = data.get("username")
+    email = data.get("email")
+
+    if not username or not email:
+        return {
+            "error": "Username and email are required"
+        }, 400
+
+    user = db.session.get(User, user_id)
+
+    if not user:
+        return {
+            "error": "User not found"
+        }, 404
+
+    existing_username = User.query.filter(
+        User.username == username,
+        User.id != user_id
+    ).first()
+
+    if existing_username:
+        return {
+            "error": "Username already exists"
+        }, 409
+
+    existing_email = User.query.filter(
+        User.email == email,
+        User.id != user_id
+    ).first()
+
+    if existing_email:
+        return {
+            "error": "Email already exists"
+        }, 409
+
+    user.username = username
+    user.email = email
+
+    db.session.commit()
+
+    return {
+        "message": "Profile updated successfully",
+        "user": user_to_dict(user)
     }

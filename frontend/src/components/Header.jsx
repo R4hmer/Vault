@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import './Header.css'
 
-function Header() {
+function Header({ user }) {
   return (
     <header className="header">
       <NavLink to="/" className="brand">
@@ -13,15 +13,24 @@ function Header() {
         <NavLink to="/" className="nav-link">
           Vault
         </NavLink>
+
         <NavLink to="/explore" className="nav-link">
           Explore
         </NavLink>
+
         <NavLink to="/notifications" className="nav-link">
           Notifications
         </NavLink>
-        <NavLink to="/profile" className="nav-link">
-          Profile
-        </NavLink>
+
+        {user ? (
+          <NavLink to="/profile" className="nav-link">
+            {user.username}
+          </NavLink>
+        ) : (
+          <NavLink to="/login" className="nav-link">
+            Log In
+          </NavLink>
+        )}
       </nav>
     </header>
   )
