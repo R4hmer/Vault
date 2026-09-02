@@ -1,7 +1,14 @@
 from flask import Blueprint, request
 
 from app import db
-from app.models import Comment, Idea, Like, Notification, User
+from app.models import (
+    Comment,
+    Favourite,
+    Idea,
+    Like,
+    Notification,
+    User
+)
 
 likes = Blueprint("likes", __name__, url_prefix="/ideas")
 
@@ -28,6 +35,10 @@ def get_idea_engagement(idea_id):
         idea_id=idea_id
     ).count()
 
+    favourites_count = Favourite.query.filter_by(
+        idea_id=idea_id
+    ).count()
+
     is_liked = False
     is_favourited = False
 
@@ -37,8 +48,6 @@ def get_idea_engagement(idea_id):
             idea_id=idea_id
         ).first() is not None
 
-        from app.models import Favourite
-
         is_favourited = Favourite.query.filter_by(
             user_id=user_id,
             idea_id=idea_id
@@ -47,6 +56,7 @@ def get_idea_engagement(idea_id):
     return {
         "idea_id": idea_id,
         "likes_count": likes_count,
+        "favourites_count": favourites_count,
         "is_liked": is_liked,
         "is_favourited": is_favourited
     }
@@ -87,7 +97,7 @@ def like_idea(idea_id):
 
     if idea.user_id != user_id:
         notification = Notification(
-            message=f"@{user.username} liked this idea",
+            message=f"@{user.username} liked your post",
             notification_type="like",
             is_read=False,
             user_id=idea.user_id,
@@ -98,9 +108,14 @@ def like_idea(idea_id):
 
     db.session.commit()
 
+    likes_count = Like.query.filter_by(
+        idea_id=idea_id
+    ).count()
+
     return {
         "message": "Idea liked successfully",
-        "like": like_to_dict(like)
+        "like": like_to_dict(like),
+        "likes_count": likes_count
     }, 201
 
 
@@ -118,12 +133,21 @@ def unlike_idea(idea_id):
     ).first()
 
     if not like:
-        return {"error": "Idea has not been liked by this user"}, 404
+        return {
+            "error": "Idea has not been liked by this user"
+        }, 404
 
     db.session.delete(like)
     db.session.commit()
 
-    return {"message": "Idea unliked successfully"}
+    likes_count = Like.query.filter_by(
+        idea_id=idea_id
+    ).count()
+
+    return {
+        "message": "Idea unliked successfully",
+        "likes_count": likes_count
+    }
 
 
 @likes.get(
@@ -193,11 +217,33 @@ def like_comment(idea_id, comment_id):
     )
 
     db.session.add(like)
+    db.session.flush()
+
+    if comment.user_id != user_id:
+        notification = Notification(
+            message=(
+                f"@{user.username} liked your comment "
+                f"on {idea.title}"
+            ),
+            notification_type="comment_like",
+            is_read=False,
+            user_id=comment.user_id,
+            idea_id=idea.id,
+            comment_id=comment.id
+        )
+
+        db.session.add(notification)
+
     db.session.commit()
+
+    likes_count = Like.query.filter_by(
+        comment_id=comment_id
+    ).count()
 
     return {
         "message": "Comment liked successfully",
-        "like": like_to_dict(like)
+        "like": like_to_dict(like),
+        "likes_count": likes_count
     }, 201
 
 
@@ -229,4 +275,11 @@ def unlike_comment(idea_id, comment_id):
     db.session.delete(like)
     db.session.commit()
 
-    return {"message": "Comment unliked successfully"}
+    likes_count = Like.query.filter_by(
+        comment_id=comment_id
+    ).count()
+
+    return {
+        "message": "Comment unliked successfully",
+        "likes_count": likes_count
+    }

@@ -8,6 +8,8 @@ ideas = Blueprint("ideas", __name__)
 
 
 def idea_to_dict(idea):
+    user = db.session.get(User, idea.user_id)
+
     return {
         "id": idea.id,
         "title": idea.title,
@@ -16,6 +18,8 @@ def idea_to_dict(idea):
         "status": idea.status,
         "privacy": idea.privacy,
         "user_id": idea.user_id,
+        "username": user.username if user else None,
+        "iconColor": idea.icon_color,
         "likes_count": len(idea.likes),
         "favourites_count": len(idea.favourites),
         "comments_count": len(idea.comments)
@@ -24,13 +28,13 @@ def idea_to_dict(idea):
 
 @ideas.get("/ideas")
 def get_ideas():
-    ideas_list = db.session.execute(
-        db.select(Idea)
-    ).scalars().all()
+    public_ideas = Idea.query.filter_by(
+        privacy="public"
+    ).all()
 
     return [
         idea_to_dict(idea)
-        for idea in ideas_list
+        for idea in public_ideas
     ]
 
 
@@ -44,6 +48,25 @@ def get_idea(idea_id):
         }, 404
 
     return idea_to_dict(idea)
+
+
+@ideas.get("/users/<int:user_id>/ideas")
+def get_user_ideas(user_id):
+    user = db.session.get(User, user_id)
+
+    if user is None:
+        return {
+            "error": "User not found"
+        }, 404
+
+    user_ideas = Idea.query.filter_by(
+        user_id=user_id
+    ).all()
+
+    return [
+        idea_to_dict(idea)
+        for idea in user_ideas
+    ]
 
 
 @ideas.get("/users/<int:user_id>/public-ideas")
@@ -94,7 +117,10 @@ def create_idea():
             "fields": missing_fields
         }, 400
 
-    user = db.session.get(User, data["user_id"])
+    user = db.session.get(
+        User,
+        data["user_id"]
+    )
 
     if user is None:
         return {
@@ -105,8 +131,12 @@ def create_idea():
         title=data["title"],
         description=data["description"],
         category=data["category"],
-        status=data.get("status", "Draft"),
+        status=data.get(
+            "status",
+            "Draft"
+        ),
         privacy=data.get("privacy", "public"),
+        icon_color=data.get("icon_color", "#F3E5DE"),
         user_id=data["user_id"]
     )
 
@@ -121,7 +151,10 @@ def create_idea():
 
 @ideas.put("/ideas/<int:idea_id>")
 def update_idea(idea_id):
-    idea = db.session.get(Idea, idea_id)
+    idea = db.session.get(
+        Idea,
+        idea_id
+    )
 
     if idea is None:
         return {
@@ -162,6 +195,9 @@ def update_idea(idea_id):
     if "privacy" in data:
         idea.privacy = data["privacy"]
 
+    if "iconColor" in data:
+        idea.icon_color = data["iconColor"]
+
     db.session.commit()
 
     return {
@@ -172,7 +208,10 @@ def update_idea(idea_id):
 
 @ideas.delete("/ideas/<int:idea_id>")
 def delete_idea(idea_id):
-    idea = db.session.get(Idea, idea_id)
+    idea = db.session.get(
+        Idea,
+        idea_id
+    )
 
     if idea is None:
         return {
