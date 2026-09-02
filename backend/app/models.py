@@ -46,11 +46,39 @@ class User(db.Model):
 
 class Idea(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(200), nullable=False)
-    description = db.Column(db.Text, nullable=False)
-    category = db.Column(db.String(100), nullable=False)
-    status = db.Column(db.String(50), nullable=False, default="Draft")
-    privacy = db.Column(db.String(20), nullable=False, default="public")
+
+    title = db.Column(
+        db.String(200),
+        nullable=False
+    )
+
+    description = db.Column(
+        db.Text,
+        nullable=False
+    )
+
+    category = db.Column(
+        db.String(100),
+        nullable=False
+    )
+
+    status = db.Column(
+        db.String(50),
+        nullable=False,
+        default="Draft"
+    )
+
+    privacy = db.Column(
+        db.String(20),
+        nullable=False,
+        default="public"
+    )
+
+    icon_color = db.Column(
+        db.String(20),
+        nullable=False,
+        default="#F3E5DE"
+    )
 
     user_id = db.Column(
         db.Integer,
@@ -90,7 +118,11 @@ class Idea(db.Model):
 
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    text = db.Column(db.Text, nullable=False)
+
+    text = db.Column(
+        db.Text,
+        nullable=False
+    )
 
     user_id = db.Column(
         db.Integer,
@@ -122,7 +154,10 @@ class Comment(db.Model):
 
 
 class Like(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
 
     user_id = db.Column(
         db.Integer,
@@ -159,7 +194,10 @@ class Like(db.Model):
 
 
 class Favourite(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
 
     user_id = db.Column(
         db.Integer,
@@ -185,11 +223,26 @@ class Favourite(db.Model):
 
 
 class Notification(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
 
-    message = db.Column(db.String(255), nullable=False)
-    notification_type = db.Column(db.String(50), nullable=False)
-    is_read = db.Column(db.Boolean, default=False, nullable=False)
+    message = db.Column(
+        db.String(255),
+        nullable=False
+    )
+
+    notification_type = db.Column(
+        db.String(50),
+        nullable=False
+    )
+
+    is_read = db.Column(
+        db.Boolean,
+        default=False,
+        nullable=False
+    )
 
     user_id = db.Column(
         db.Integer,
@@ -222,11 +275,26 @@ class Notification(db.Model):
 
 
 class RoadmapTask(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
 
-    title = db.Column(db.String(200), nullable=False)
-    description = db.Column(db.Text, nullable=False)
-    status = db.Column(db.String(50), nullable=False, default="Pending")
+    title = db.Column(
+        db.String(200),
+        nullable=False
+    )
+
+    description = db.Column(
+        db.Text,
+        nullable=False
+    )
+
+    status = db.Column(
+        db.String(50),
+        nullable=False,
+        default="Pending"
+    )
 
     user_id = db.Column(
         db.Integer,
