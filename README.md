@@ -12,6 +12,8 @@ The project began as a React-based frontend application and was subsequently ext
 
 [Vault — Live Demo](https://vault-three-eta.vercel.app/)
 
+[Project Presentation](https://docs.google.com/presentation/d/1KehcGZ_6C6UXMrAGkZSWd6N9omtIx4gfo1BNOEGxxxg/edit?usp=sharing)
+
 ---
 
 ## Problem
