@@ -682,3 +682,15 @@
     width: fit-content;
   }
 }
+.vault-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: 25px;
+}
+
+.vault-card-status {
+  margin-left: 8px;
+  margin-right: 8px;
+}

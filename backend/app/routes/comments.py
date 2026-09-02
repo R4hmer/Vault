@@ -58,8 +58,8 @@ def create_comment():
     if idea.user_id != user_id:
         notification = Notification(
             message=(
-                f"{user.username} commented on your idea: "
-                f"{idea.title}"
+                f"@{user.username} commented "
+                f"on your post: {idea.title}"
             ),
             notification_type="comment",
             is_read=False,

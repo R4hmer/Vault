@@ -7,8 +7,10 @@ const API_URL = import.meta.env.VITE_API_URL
 function Notifications({ user }) {
   const navigate = useNavigate()
 
-  const [notifications, setNotifications] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [notifications, setNotifications] =
+    useState([])
+  const [loading, setLoading] =
+    useState(true)
   const [error, setError] = useState('')
 
   useEffect(() => {
@@ -31,16 +33,49 @@ function Notifications({ user }) {
       )
 
       if (!response.ok) {
-        throw new Error('Failed to load notifications')
+        throw new Error(
+          'Failed to load notifications'
+        )
       }
 
       const data = await response.json()
 
       setNotifications(data)
     } catch {
-      setError('Unable to load notifications.')
+      setError(
+        'Unable to load notifications.'
+      )
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function markAsRead(id) {
+    try {
+      await fetch(
+        `${API_URL}/notifications/${id}/read`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type':
+              'application/json'
+          }
+        }
+      )
+
+      setNotifications(
+        (current) =>
+          current.map((notification) =>
+            notification.id === id
+              ? {
+                  ...notification,
+                  is_read: true
+                }
+              : notification
+          )
+      )
+    } catch {
+      // Leave notification visible.
     }
   }
 
@@ -56,7 +91,9 @@ function Notifications({ user }) {
 
           <button
             type="button"
-            onClick={() => navigate('/login')}
+            onClick={() =>
+              navigate('/login')
+            }
           >
             Log In
           </button>
@@ -93,7 +130,8 @@ function Notifications({ user }) {
           notifications.length === 0 && (
             <div className="notifications-empty">
               <p>
-                You don't have any notifications yet.
+                You don't have any
+                notifications yet.
               </p>
             </div>
           )}
@@ -102,20 +140,30 @@ function Notifications({ user }) {
           !error &&
           notifications.length > 0 && (
             <div className="notifications-list">
-              {notifications.map((notification) => (
-                <div
-                  className={`notification-item ${
-                    notification.is_read
-                      ? 'read'
-                      : 'unread'
-                  }`}
-                  key={notification.id}
-                >
-                  <span className="notification-dot" />
+              {notifications.map(
+                (notification) => (
+                  <button
+                    className={`notification-item ${
+                      notification.is_read
+                        ? 'read'
+                        : 'unread'
+                    }`}
+                    key={notification.id}
+                    type="button"
+                    onClick={() =>
+                      markAsRead(
+                        notification.id
+                      )
+                    }
+                  >
+                    <span className="notification-dot" />
 
-                  <p>{notification.message}</p>
-                </div>
-              ))}
+                    <p>
+                      {notification.message}
+                    </p>
+                  </button>
+                )
+              )}
             </div>
           )}
       </section>
